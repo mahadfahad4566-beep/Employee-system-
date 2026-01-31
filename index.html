@@ -10,6 +10,38 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
+    <!-- Firebase Modular SDK v10+ -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics.js";
+        import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDqA5EKfUDpO1bIyefB5oNFrMPzCMJp9fA",
+            authDomain: "system-employee.firebaseapp.com",
+            projectId: "system-employee",
+            storageBucket: "system-employee.firebasestorage.app",
+            messagingSenderId: "704831486052",
+            appId: "1:704831486052:web:f8be028e3a55c195d4c771",
+            measurementId: "G-B42HYHYRCG"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        window.auth = getAuth(app);
+
+        // Global reCAPTCHA (invisible)
+        window.recaptchaVerifier = new RecaptchaVerifier(window.auth, 'recaptcha-container', {
+            'size': 'invisible',
+            'callback': (response) => {
+                console.log("reCAPTCHA solved");
+            },
+            'expired-callback': () => {
+                alert("reCAPTCHA ختم ہو گیا، صفحہ ریفریش کریں");
+            }
+        });
+    </script>
+
     <style>
         :root {
             --primary-color: #1f2d3d;
@@ -18,131 +50,31 @@
             --danger-color: #dc3545;
             --warning-color: #f0ad4e;
         }
-
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f4f6f9;
-            color: #333;
-        }
-
-        header {
-            background: var(--primary-color);
-            color: #fff;
-            text-align: center;
-            padding: 20px 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f9; color: #333; }
+        header { background: var(--primary-color); color: #fff; text-align: center; padding: 20px 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         header h2 { margin: 0; font-size: 24px; }
         header small { opacity: 0.8; font-size: 14px; }
-
-        .container {
-            max-width: 1000px;
-            margin: 20px auto;
-            padding: 20px;
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        input {
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            transition: border 0.3s;
-        }
-
+        .container { max-width: 1000px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; transition: border 0.3s; }
         input:focus { border-color: var(--accent-color); }
-
-        #map {
-            height: 350px;
-            width: 100%;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border: 2px solid #eee;
-            z-index: 1;
-        }
-
-        .btn-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-
-        button {
-            flex: 1;
-            min-width: 120px;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s, opacity 0.8s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
+        #map { height: 350px; width: 100%; border-radius: 12px; margin-bottom: 20px; border: 2px solid #eee; z-index: 1; }
+        .btn-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; }
+        button { flex: 1; min-width: 120px; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         button:active { transform: scale(0.98); }
-
         .blue { background: var(--accent-color); color: white; }
         .orange { background: var(--warning-color); color: white; }
         .green { background: var(--success-color); color: white; }
         .red { background: var(--danger-color); color: white; }
-
         .table-container { overflow-x: auto; }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid #eee;
-        }
-
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 12px; text-align: center; border-bottom: 1px solid #eee; }
         th { background: #f8f9fa; color: #555; font-weight: 600; }
         tr:hover { background: #fafafa; }
-
-        footer {
-            background: var(--primary-color);
-            color: #fff;
-            text-align: center;
-            padding: 25px;
-            margin-top: 40px;
-        }
-
-        .whatsapp {
-            background: #25d366;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 30px;
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-
-        @media (max-width: 600px) {
-            .btn-group button { width: 100%; flex: none; }
-        }
+        footer { background: var(--primary-color); color: #fff; text-align: center; padding: 25px; margin-top: 40px; }
+        .whatsapp { background: #25d366; color: #fff; padding: 10px 20px; border-radius: 30px; text-decoration: none; display: inline-block; margin-top: 10px; font-weight: bold; }
+        #recaptcha-container { margin: 10px 0; min-height: 78px; }
+        @media (max-width: 600px) { .btn-group button { width: 100%; flex: none; } }
     </style>
 </head>
 <body>
@@ -157,14 +89,17 @@
         <input id="name" type="text" placeholder="Name | نام">
         <input id="designation" type="text" placeholder="Designation | عہدہ">
         <input id="section" type="text" placeholder="Section | سیکشن">
-        <input id="mobile" type="number" placeholder="Mobile Number | موبائل نمبر">
+        <input id="mobile" type="text" placeholder="موبائل نمبر +92 کے ساتھ | +923xxxxxxxxx">
     </div>
+
+    <div id="recaptcha-container"></div>
 
     <div id="map"></div>
 
     <div class="btn-group">
         <button class="blue" onclick="getLocation()">📍 حاصل کریں</button>
-        <button class="orange" onclick="saveRecord()">💾 محفوظ کریں</button>
+        <button class="orange" onclick="sendOTP()">📱 OTP بھیجیں</button>
+        <button class="orange" onclick="verifyAndSave()">💾 OTP تصدیق + محفوظ کریں</button>
         <button class="green" onclick="exportExcel()">📊 Excel</button>
         <button class="green" onclick="exportPDF()">📄 PDF</button>
         <button class="green" onclick="exportJPG()">🖼 JPG</button>
@@ -191,31 +126,11 @@
 <footer>
     <b>System Developed By: Mahad Irfan</b><br>
     <a class="whatsapp" href="https://wa.me/923464563020" target="_blank">WhatsApp: 0346-4563020</a><br>
-    <small>© 2024-2026 Offline Sync Ready</small>
+    <small>© 2024-2026 Offline Sync Ready | Phone OTP Verified</small>
 </footer>
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyDqA5EKfUDpO1bIyefB5oNFrMPzCMJp9fA",
-  authDomain: "system-employee.firebaseapp.com",
-  projectId: "system-employee",
-  storageBucket: "system-employee.firebasestorage.app",
-  messagingSenderId: "704831486052",
-  appId: "1:704831486052:web:f8be028e3a55c195d4c771",
-  measurementId: "G-B42HYHYRCG"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 <script>
-    // Initialize Map
+    // Map Initialize
     let map = L.map('map').setView([30.3753, 69.3451], 5);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
@@ -224,8 +139,85 @@ const analytics = getAnalytics(app);
 
     let marker, latlng = "";
     const dataDiv = document.getElementById("dataBody");
+    let confirmationResult = null;
 
-    // Get Current Location
+    // Send OTP
+    function sendOTP() {
+        const mobile = document.getElementById("mobile").value.trim();
+        if (!mobile || !mobile.startsWith('+92') || mobile.length < 13) {
+            alert("صحیح موبائل نمبر درج کریں (+923xxxxxxxxx)!");
+            return;
+        }
+        if (!latlng) {
+            alert("پہلے لوکیشن حاصل کریں!");
+            return;
+        }
+
+        signInWithPhoneNumber(window.auth, mobile, window.recaptchaVerifier)
+            .then((result) => {
+                confirmationResult = result;
+                alert("OTP آپ کے موبائل پر بھیج دیا گیا ہے! (SMS چیک کریں)");
+            })
+            .catch((error) => {
+                alert("OTP بھیجنے میں مسئلہ: " + error.message + " (کوڈ: " + error.code + ")");
+                console.error(error);
+            });
+    }
+
+    // Verify OTP and Save Record
+    function verifyAndSave() {
+        if (!confirmationResult) {
+            alert("پہلے OTP بھیجیں!");
+            return;
+        }
+
+        const code = prompt("OTP درج کریں جو SMS میں آیا ہے:");
+        if (!code || code.length !== 6) {
+            alert("6 ہندسوں کا OTP درج کریں!");
+            return;
+        }
+
+        confirmationResult.confirm(code)
+            .then((result) => {
+                const user = result.user;
+                alert("OTP درست ہے! ریکارڈ محفوظ ہو رہا ہے۔");
+
+                let r = {
+                    name: document.getElementById("name").value.trim(),
+                    des: document.getElementById("designation").value.trim(),
+                    sec: document.getElementById("section").value.trim(),
+                    mob: document.getElementById("mobile").value.trim(),
+                    loc: latlng,
+                    time: new Date().toLocaleString('ur-PK'),
+                    uid: user.uid  // Firebase UID سیو (اختیاری)
+                };
+
+                if (!r.name || !r.mob || !r.loc) {
+                    alert("نام، موبائل اور لوکیشن مکمل کریں!");
+                    return;
+                }
+
+                let data = JSON.parse(localStorage.getItem("emp_data") || "[]");
+                data.push(r);
+                localStorage.setItem("emp_data", JSON.stringify(data));
+
+                // Clear form
+                document.getElementById("name").value = "";
+                document.getElementById("designation").value = "";
+                document.getElementById("section").value = "";
+                document.getElementById("mobile").value = "";
+                latlng = "";
+                if (marker) map.removeLayer(marker);
+                confirmationResult = null;
+
+                load();
+            })
+            .catch((error) => {
+                alert("OTP غلط ہے یا ختم ہو گیا: " + error.message);
+            });
+    }
+
+    // Get Location
     function getLocation() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(p => {
@@ -237,46 +229,17 @@ const analytics = getAnalytics(app);
                 
                 let empName = document.getElementById("name").value || "Employee";
                 marker = L.marker([lat, lng]).addTo(map)
-                         .bindPopup(`<b>${empName}</b><br>${latlng}`)
+                         .bindPopup(`<b>\( {empName}</b><br> \){latlng}`)
                          .openPopup();
                          
                 map.setView([lat, lng], 15);
-                alert("لوکیشن کامیابی سے حاصل کر لی گئی ہے۔");
+                alert("لوکیشن حاصل ہو گئی!");
             }, (error) => {
-                alert("لوکیشن حاصل کرنے میں مسئلہ: " + error.message);
+                alert("لوکیشن مسئلہ: " + error.message);
             });
         } else {
-            alert("آپ کا براؤزر لوکیشن کی سہولت فراہم نہیں کرتا۔");
+            alert("براؤزر لوکیشن سپورٹ نہیں کرتا!");
         }
-    }
-
-    // Save Record
-    function saveRecord() {
-        let r = {
-            name: document.getElementById("name").value,
-            des: document.getElementById("designation").value,
-            sec: document.getElementById("section").value,
-            mob: document.getElementById("mobile").value,
-            loc: latlng,
-            time: new Date().toLocaleString('ur-PK')
-        };
-
-        if (!r.name || !r.mob || !r.loc) {
-            alert("براہ کرم نام، موبائل اور لوکیشن یقینی بنائیں۔");
-            return;
-        }
-
-        let data = JSON.parse(localStorage.getItem("emp_data") || "[]");
-        data.push(r);
-        localStorage.setItem("emp_data", JSON.stringify(data));
-        
-        // Clear logic
-        document.getElementById("name").value = "";
-        document.getElementById("mobile").value = "";
-        latlng = "";
-        if(marker) map.removeLayer(marker);
-
-        load();
     }
 
     // Load Data
@@ -286,20 +249,19 @@ const analytics = getAnalytics(app);
         data.forEach((r, i) => {
             dataDiv.innerHTML += `
             <tr>
-                <td>${r.name}</td>
-                <td>${r.des}</td>
-                <td>${r.sec}</td>
-                <td>${r.mob}</td>
-                <td><small>${r.loc}</small></td>
+                <td>${r.name || ''}</td>
+                <td>${r.des || ''}</td>
+                <td>${r.sec || ''}</td>
+                <td>${r.mob || ''}</td>
+                <td><small>${r.loc || ''}</small></td>
                 <td><small>${r.time}</small></td>
                 <td><button class="red" style="padding:4px 8px; font-size:11px;" onclick="del(${i})">ختم کریں</button></td>
             </tr>`;
         });
     }
 
-    // Delete Record
     function del(i) {
-        if(confirm("کیا آپ واقعی یہ ریکارڈ حذف کرنا چاہتے ہیں؟")){
+        if(confirm("ریکارڈ حذف کریں؟")){
             let d = JSON.parse(localStorage.getItem("emp_data"));
             d.splice(i, 1);
             localStorage.setItem("emp_data", JSON.stringify(d));
@@ -307,7 +269,6 @@ const analytics = getAnalytics(app);
         }
     }
 
-    // Export Excel (With Urdu Support)
     function exportExcel() {
         let table = document.querySelector("table").outerHTML;
         let blob = new Blob(['\ufeff', table], { type: 'application/vnd.ms-excel' });
@@ -318,7 +279,6 @@ const analytics = getAnalytics(app);
         a.click();
     }
 
-    // Export PDF
     function exportPDF() {
         const { jsPDF } = window.jspdf;
         html2canvas(document.getElementById("printArea")).then(canvas => {
@@ -332,7 +292,6 @@ const analytics = getAnalytics(app);
         });
     }
 
-    // Export JPG
     function exportJPG() {
         html2canvas(document.getElementById("printArea")).then(canvas => {
             let a = document.createElement("a");
